@@ -1,10 +1,8 @@
 # backend-training
 
-# backend-training
-
 ## 学習ログ
 
-### Day1（今日の日付）
+### Day1（2025/12/06）
 - Express基礎
 - ルーティング（GET）
 - 動的パラメータ（:id）
