@@ -31,14 +31,15 @@
 
 ### Day3（2025/12/07）
 - DockerでPostgreSQL起動
-- SQL基礎（CREATE TABLE, INSERT, SELECT, WHERE）
-- ExpressからDB接続（pg, Pool）
-- プレースホルダー（$1）でSQLインジェクション対策
-- CRUD APIをDB対応
+- CRUD API完成（GET/POST/PUT/DELETE）
+- SQLインジェクション対策（$1プレースホルダー）
 
-#### 詰まったポイント
-- app.post('users') → '/users' のスラッシュ忘れ
-- $1 と [値] の対応関係
-
-#### 理解度
-- 概念は理解（プレースホルダーはヒント必要だった）
+#### 学んだ「なぜ」
+- なぜPostgreSQL → 厳密、スケール、求人に合う
+- なぜDocker → 環境の再現性
+- なぜPool → 接続を使い回して高速化
+- なぜRESTful → 業界標準、チームが理解しやすい
+- なぜRETURNING → クエリ往復を減らす
+- なぜステータスコード → フロントが判断しやすい、監視できる
+- なぜasync/await → DBの応答を待つ
+- なぜバリデーション → わかりやすいエラー、DB負荷削減
