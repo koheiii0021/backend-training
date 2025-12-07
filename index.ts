@@ -1,3 +1,5 @@
+import { Result } from 'pg';
+import pool from './db';
 import express, { Request, Response } from 'express';
 
 const app = express();
@@ -8,38 +10,53 @@ app.use((req: Request, res: Response, next: Function ) => {
     next();
 });
 
-app.get('/', (req: Request, res: Response ) => {
+app.get('/', ( req: Request, res: Response ) => {
     res.send('Hello World');
 });
 
-app.get('/users', (req: Request, res: Response ) => {
-    res.json({
-        message: "ユーザー一覧"
-    });
+app.get('/users', async ( req: Request, res: Response ) => {
+    const result = await pool.query('SELECT * FROM users');
+    res.json(result.rows);
 });
 
-app.post('/users', (req: Request, res: Response ) => {
+app.post('/users', async (req: Request, res: Response ) => {
     const body = req.body;
 
     if(!body.name){
-        res.status(400).json({ error: "nameは必須です" });
+        res.status(400).json({ error: 'nameは必須です' });
         return ;
-    };
+    }
 
-    res.status(201).json({
-        message: "ユーザー作成しました",
-        data: body
-    });
+    if(!body.email){
+        res.status(400).json({ error: 'emailは必須です' });
+        return ;
+    }
+
+    const result = await pool.query(
+        'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
+        [body.name, body.email]
+    );
+
+    res.status(201).json(result.rows[0]);
 });
 
-app.get('/users/:id', (req: Request, res: Response ) => {
+app.get('/users/:id', async (req: Request, res: Response ) => {
     const userId = req.params.id;
-    res.json({
-        id: userId,
-        name: "田中太郎"
-    });
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+
+    if(result.rows.length === 0) {
+        res.status(404).json({ error: 'ユーザーは見つかりません' });
+        return;
+    }
+
+    res.json(result.rows[0]);
 });
 
 app.listen(3000, () => {
     console.log('Server runnning on port 3000');
 });
+
+app.get('/users/:id', async (req: Request, res: Response ) => {
+    const userId = req.params.id;
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId])
+})
