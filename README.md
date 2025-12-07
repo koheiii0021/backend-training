@@ -29,17 +29,20 @@
 #### 理解度
 - 何も見ずに書けた（3箇所ヒントあり）
 
-### Day3（2025/12/07）
-- DockerでPostgreSQL起動
-- CRUD API完成（GET/POST/PUT/DELETE）
-- SQLインジェクション対策（$1プレースホルダー）
+### Day3-5途中（2025/12/07）
+- PostgreSQL + Docker
+- CRUD API（GET/POST/PUT/DELETE）
+- try-catchエラーハンドリング
+- 認証（JWT）：signup, login, authMiddleware
 
 #### 学んだ「なぜ」
-- なぜPostgreSQL → 厳密、スケール、求人に合う
-- なぜDocker → 環境の再現性
-- なぜPool → 接続を使い回して高速化
-- なぜRESTful → 業界標準、チームが理解しやすい
-- なぜRETURNING → クエリ往復を減らす
-- なぜステータスコード → フロントが判断しやすい、監視できる
-- なぜasync/await → DBの応答を待つ
-- なぜバリデーション → わかりやすいエラー、DB負荷削減
+- Pool → 接続を使い回して高速化
+- $1 → SQLインジェクション対策
+- RESTful → 業界標準、可読性
+- bcrypt → パスワードを暗号化してDB流出時の被害を防ぐ
+- JWT → ログイン状態をトークンで管理
+
+#### 詰まったポイント（認証）
+- bcrypt.hash / bcrypt.compare の使い分け
+- jwt.sign にパスワードを入れない
+- split(' ')[1] でトークン部分を取り出す
