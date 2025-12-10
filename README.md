@@ -62,3 +62,65 @@
 - ステータスコード: 400, 401, 404, 500 の使い分け
 - jwt.verify の基本的な使い方
 - ミドルウェアの実行順序
+
+## Day 5: Express + PostgreSQL + JWT 認証付き CRUD API の総復習
+
+### 実装したもの／確認したこと
+
+#### プロジェクト構成
+
+- src/index.ts … app.listen(PORT) だけ
+- src/app.ts … express() 作成、express.json()、/auth / /users マウント、errorHandler
+- src/db.ts … Pool（env から host / port / user / password / database）
+- src/middleware/authMiddleware.ts … JWT 検証
+- src/routes/auth.ts … signup / login
+- src/routes/users.ts … users の CRUD
+
+#### DB
+
+- Docker で PostgreSQL 起動（POSTGRES_PASSWORD, POSTGRES_DB）
+- users テーブル作成
+- id SERIAL PRIMARY KEY
+- name, email UNIQUE NOT NULL, password
+- created_at, updated_at
+
+#### 認証フロー
+
+- signup: バリデーション → email 重複チェック → bcrypt.hash → INSERT + RETURNING
+- login: email で検索 → bcrypt.compare → jwt.sign → token 返却
+- authMiddleware: Authorization: Bearer <token> を検証して req.user に積む
+
+#### ユーザー CRUD
+
+- GET /users : 一覧
+- GET /users/:id : 詳細、id バリデーション＋404
+- PUT /users/:id : name, email 更新（必須チェック＋404）
+- DELETE /users/:id : 削除（204 No Content）
+
+### エラーを通して理解したこと
+
+- password authentication failed for user "postgres"
+→ DB ユーザー or パスワードの不一致（.env と Docker の設定を揃える必要）
+
+- relation "users" does not exist
+→ テーブル作成（マイグレーション）を忘れている
+
+- トークンなし / Authorization ヘッダ typo
+→ authMiddleware が正しく 401 を返すことを確認
+
+- DELETE 後の GET が 404
+→ DELETE が実際に効いていることを確認
+
+### 定着したいポイント（覚える）
+
+#### Express 構成パターン
+
+- index.ts = 起動だけ
+- app.ts = ミドルウェア / ルーター / エラーハンドラを組み立てる
+- routes = URL ごとの担当
+- middleware = 共通処理（認証 / エラー）
+- db = Pool を 1個 export して全体で使い回す
+
+#### 認証付き API の流れ
+
+- signup → login → token → Authorization: Bearer ... → 認証付きルート

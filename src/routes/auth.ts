@@ -2,9 +2,9 @@ import { pool } from "../db";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Router, Request, Response } from "express";
-import { resolveObjectURL } from "buffer";
 
-const authRouter = Router();
+
+export const authRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 if(!JWT_SECRET) {
@@ -27,7 +27,7 @@ authRouter.post('/signup', async (req: Request, res: Response) => {
         )
 
         if(mailCheck.rows.length > 0){
-            res.status(401).json({ error: 'メールアドレスは使われてます' });
+            res.status(400).json({ error: 'メールアドレスは使われてます' });
             return ;
         }
 
@@ -56,7 +56,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
         }
 
         const result = await pool.query(
-            'SELCET id FROM users WHERE email = $1',
+            'SELECT * FROM users WHERE email = $1',
             [email]
         )
 
@@ -80,7 +80,8 @@ authRouter.post('/login', async (req: Request, res: Response) => {
             { expiresIn: "24h"}
         );
 
-        res.status(201).json({ token });
+        res.status(200).json({ token });
+        
     } catch (err) {
         console.error('Login error', err);
         res.status(500).json({ error: 'サーバーエラーが発生しました' });
