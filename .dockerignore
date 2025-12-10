@@ -1,0 +1,25 @@
+# 依存ファイル（コンテナ内で npm install するので不要）
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Git 関連
+.git
+.gitignore
+
+# ビルド成果物（必要なら残すが、基本は除外してもOK）
+dist
+build
+coverage
+
+# ログ
+*.log
+
+# IDE 設定
+.vscode
+.idea
+
+# 環境変数（秘密情報）
+.env
+.env.*
